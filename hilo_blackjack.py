@@ -60,18 +60,14 @@ def play_blackjack_hilo(num_decks=1):
     while calculate_hand_value(player_hand) < 21:
         remaining_decks = len(deck) // 52
         recommendation = recommend_hilo_action(player_hand, dealer_hand, running_count, remaining_decks)
-        print(f"Recommendation based on Hi-Lo: {recommendation}")
-        move = input(f"Do you want to hit or stand? (Recommended: {recommendation}) ").lower()
-        if move == 'hit':
+        if recommendation == 'hit':
             new_card = deck.pop()
             player_hand.append(new_card)
             running_count = calculate_running_count([new_card], running_count)
             print("Your hand:", calculate_hand_value(player_hand))
             display_hand(player_hand)
-        elif move == 'stand':
+        elif recommendation == 'stand':
             break
-        else:
-            print("Invalid input. Please enter 'hit' or 'stand'.")
 
     player_value = calculate_hand_value(player_hand)
     if player_value > 21:
