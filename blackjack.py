@@ -1,5 +1,4 @@
 numDecks = 3
-numPlayers = 1
 
 import random
 
@@ -12,11 +11,12 @@ values = {
 }
 
 # Function to create a deck
-def create_deck():
+def create_deck(numDecks):
     deck = []
-    for suit in suits:
-        for rank in ranks:
-            deck.append((rank, suit))
+    for x in range(numDecks):
+        for suit in suits:
+            for rank in ranks:
+                deck.append((rank, suit))
     random.shuffle(deck)
     return deck
 
@@ -33,6 +33,22 @@ def calculate_hand_value(hand):
         ace_count -= 1
     return value
 
+def get_hand_total(hand):
+    total = 0
+    ace_count = 0
+    for card in hand:
+        rank = card[0]
+        total += values[rank]
+        if rank == 'A':
+            ace_count += 1
+    
+    # Adjust for Aces if total value is greater than 21
+    while total > 21 and ace_count > 0:
+        total -= 10
+        ace_count -= 1
+    
+    return total
+
 # Function to display a hand
 def display_hand(hand, hide_first_card=False):
     if hide_first_card:
@@ -44,23 +60,25 @@ def display_hand(hand, hide_first_card=False):
 
 # Function to play the game
 def play_blackjack():
-    deck = create_deck()
+    deck = create_deck(numDecks)
 
-    player_hand = [deck.pop(), deck.pop()]
-    dealer_hand = [deck.pop(), deck.pop()]
+    player_hand = [deck.pop()]
+    dealer_hand = [deck.pop()]
+    player_hand.append(deck.pop())
+    dealer_hand.append(deck.pop())
 
     print("Dealer's hand:")
     display_hand(dealer_hand, hide_first_card=True)
 
-    print("Your hand:")
+    print("Your hand:", get_hand_total(player_hand))
     display_hand(player_hand)
 
     while calculate_hand_value(player_hand) < 21:
         move = input("Do you want to 'hit' or 'stand'? ").lower()
         if move == 'hit':
             player_hand.append(deck.pop())
-            print("Your hand:")
-            display_hand(player_hand)
+            print("Your hand:", get_hand_total(player_hand))
+            display_hand(player_hand) 
         elif move == 'stand':
             break
         else:
