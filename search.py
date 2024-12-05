@@ -73,15 +73,17 @@ def recommend_action(player_hand, dealer_hand, deck):
 
 # Integrate into the game loop
 def play_blackjack_with_recommendations():
-    deck = blackjack.create_deck()
+    deck = blackjack.create_deck(3)
 
-    player_hand = [deck.pop(), deck.pop()]
-    dealer_hand = [deck.pop(), deck.pop()]
+    player_hand = [deck.pop()]
+    dealer_hand = [deck.pop()]
+    player_hand.append(deck.pop())
+    dealer_hand.append(deck.pop())
 
     print("Dealer's hand:")
     blackjack.display_hand(dealer_hand, hide_first_card=True)
 
-    print("Your hand:")
+    print("Your hand:", blackjack.get_hand_total(player_hand))
     blackjack.display_hand(player_hand)
 
     while blackjack.calculate_hand_value(player_hand) < 21:
@@ -91,7 +93,7 @@ def play_blackjack_with_recommendations():
         move = input("Do you want to 'hit' or 'stand'? (Recommended: {}) ".format(recommendation)).lower()
         if move == 'hit':
             player_hand.append(deck.pop())
-            print("Your hand:")
+            print("Your hand:", blackjack.get_hand_total(player_hand))
             blackjack.display_hand(player_hand)
         elif move == 'stand':
             break
