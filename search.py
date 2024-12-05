@@ -1,60 +1,60 @@
 from blackjack import generate_deck, shuffle_all_decks, calculate_hand_value, display_hand, convert_to_tuples
+from collections import deque
 
-def simulate_outcome(deck, hand, dealer_hand, depth=3, is_player_turn=True):
+def simulate_outcome(deck, hand, dealer_hand, depth=3):
     """
-    Simulates outcomes for a given state using a search algorithm (Minimax-like approach).
+    Simulates outcomes for a given state using BFS.
     - deck: Remaining cards in the deck
     - hand: Player's current hand
     - dealer_hand: Dealer's current hand
     - depth: Number of levels to explore in the decision tree
-    - is_player_turn: Whether it's the player's turn
     Returns a dictionary of outcomes (win, lose, tie, bust).
     """
-    if depth == 0 or calculate_hand_value(hand) > 21:
-        # Terminal state or maximum depth reached
-        player_value = calculate_hand_value(hand)
-        dealer_value = calculate_hand_value(dealer_hand)
-
-        if player_value > 21:
-            return {"win": 0, "lose": 1, "tie": 0, "bust": 1}
-        if dealer_value > 21:
-            return {"win": 1, "lose": 0, "tie": 0, "bust": 0}
-        if player_value > dealer_value:
-            return {"win": 1, "lose": 0, "tie": 0, "bust": 0}
-        if player_value < dealer_value:
-            return {"win": 0, "lose": 1, "tie": 0, "bust": 0}
-        return {"win": 0, "lose": 0, "tie": 1, "bust": 0}
-
     outcomes = {"win": 0, "lose": 0, "tie": 0, "bust": 0}
+    queue = deque([(hand, dealer_hand, deck, True, 0)])  # (player_hand, dealer_hand, deck, is_player_turn, current_depth)
 
-    if is_player_turn:
-        # Player's turn: Hit or Stand
-        for i, card in enumerate(deck):
-            new_hand = hand + [card]
-            new_deck = deck[:i] + deck[i + 1:]
-            result = simulate_outcome(new_deck, new_hand, dealer_hand, depth - 1, False)
-            for key in outcomes:
-                outcomes[key] += result[key]
+    while queue:
+        curr_hand, curr_dealer_hand, curr_deck, is_player_turn, curr_depth = queue.popleft()
 
-        # "Stand" branch
-        result = simulate_outcome(deck, hand, dealer_hand, depth - 1, False)
-        for key in outcomes:
-            outcomes[key] += result[key]
+        # Terminal state or maximum depth reached
+        if curr_depth >= depth or calculate_hand_value(curr_hand) > 21:
+            player_value = calculate_hand_value(curr_hand)
+            dealer_value = calculate_hand_value(curr_dealer_hand)
 
-    else:
-        # Dealer's turn: Hit until 17 or higher
-        dealer_value = calculate_hand_value(dealer_hand)
-        if dealer_value >= 17:
-            result = simulate_outcome(deck, hand, dealer_hand, depth - 1, True)
-            for key in outcomes:
-                outcomes[key] += result[key]
+            if player_value > 21:
+                outcomes["bust"] += 1
+            elif dealer_value > 21:
+                outcomes["win"] += 1
+            elif player_value > dealer_value:
+                outcomes["win"] += 1
+            elif player_value < dealer_value:
+                outcomes["lose"] += 1
+            else:
+                outcomes["tie"] += 1
+            continue
+
+        # Player's turn
+        if is_player_turn:
+            # "Stand" branch
+            queue.append((curr_hand, curr_dealer_hand, curr_deck, False, curr_depth + 1))
+
+            # "Hit" branch
+            for i, card in enumerate(curr_deck):
+                new_hand = curr_hand + [card]
+                new_deck = curr_deck[:i] + curr_deck[i + 1:]
+                queue.append((new_hand, curr_dealer_hand, new_deck, True, curr_depth + 1))
+
+        # Dealer's turn
         else:
-            for i, card in enumerate(deck):
-                new_dealer_hand = dealer_hand + [card]
-                new_deck = deck[:i] + deck[i + 1:]
-                result = simulate_outcome(new_deck, hand, new_dealer_hand, depth - 1, True)
-                for key in outcomes:
-                    outcomes[key] += result[key]
+            dealer_value = calculate_hand_value(curr_dealer_hand)
+            if dealer_value >= 17:
+                # Evaluate final state
+                queue.append((curr_hand, curr_dealer_hand, curr_deck, False, curr_depth + 1))
+            else:
+                for i, card in enumerate(curr_deck):
+                    new_dealer_hand = curr_dealer_hand + [card]
+                    new_deck = curr_deck[:i] + curr_deck[i + 1:]
+                    queue.append((curr_hand, new_dealer_hand, new_deck, False, curr_depth + 1))
 
     return outcomes
 
