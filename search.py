@@ -1,5 +1,6 @@
 from blackjack import generate_deck, shuffle_all_decks, calculate_hand_value, display_hand, convert_to_tuples
 from collections import deque
+import random
 
 def simulate_outcome(deck, hand, dealer_hand, depth=3):
     """
@@ -95,9 +96,8 @@ def play_blackjack_with_recommendations():
     # Player's turn
     while calculate_hand_value(player_hand) < 21:
         recommendation = recommend_action(player_hand, dealer_hand, deck)
-        print(f"Recommendation: {recommendation}")
-
-        move = input(f"Do you want to 'hit' or 'stand'? (Recommended: {recommendation}) ").lower()
+        print(f"Recommendation:{recommendation} ")
+        move = input(f"Do you want to hit or stand? (Recommended: {recommendation}) ").lower()
         if move == 'hit':
             player_hand.append(deck.pop())
             print("Your hand:", calculate_hand_value(player_hand))
@@ -107,27 +107,41 @@ def play_blackjack_with_recommendations():
         else:
             print("Invalid input. Please enter 'hit' or 'stand'.")
 
-    # Final evaluation
+    # Evaluate player bust
     player_value = calculate_hand_value(player_hand)
     if player_value > 21:
         print("You busted! Dealer wins.")
-        return
+        return "lose"  # Player busts, dealer wins
 
+    # Dealer's turn
     print("Dealer's hand:")
     display_hand(dealer_hand)
-    while calculate_hand_value(dealer_hand) < 17:
+    while calculate_hand_value(dealer_hand) < 17 or (
+        calculate_hand_value(dealer_hand) == 17 and 'A' in [card[0] for card in dealer_hand]
+    ):
         dealer_hand.append(deck.pop())
         print("Dealer's hand:")
         display_hand(dealer_hand)
 
+    # Evaluate dealer bust
     dealer_value = calculate_hand_value(dealer_hand)
+    if dealer_value > 21:
+        return "win"  # Dealer busts, player wins
 
-    if dealer_value > 21 or player_value > dealer_value:
-        print("You win!")
+    # Final evaluation
+    if player_value > dealer_value:
+        return "win"
     elif player_value < dealer_value:
-        print("Dealer wins.")
+        return "lose"
     else:
-        print("It's a tie!")
+        return "tie"  # Equal values result in a tie
 
 if __name__ == "__main__":
-    play_blackjack_with_recommendations()
+    results = {"win": 0, "lose": 0, "tie": 0}
+
+    result = play_blackjack_with_recommendations()
+    results[result] += 1
+
+    print(f"Wins: {results['win']} ({(results['win'] / 1000) * 100:.2f}%)")
+    print(f"Losses: {results['lose']} ({(results['lose'] / 1000) * 100:.2f}%)")
+    print(f"Ties: {results['tie']} ({(results['tie'] / 1000) * 100:.2f}%)")
