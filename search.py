@@ -63,24 +63,24 @@ def recommend_action(player_hand, dealer_hand, deck, depth=3):
     """
     Recommends whether the player should hit or stand based on simulated outcomes.
     """
-    outcomes_hit = simulate_outcome(deck, player_hand + [deck[0]], dealer_hand, depth)
+    outcomes_hit = simulate_outcome(deck, player_hand + [deck[-1]], dealer_hand, depth)
     outcomes_stand = simulate_outcome(deck, player_hand, dealer_hand, depth)
 
     # Calculate win probabilities
     prob_hit = outcomes_hit["win"] / (sum(outcomes_hit.values()) or 1)
     prob_stand = outcomes_stand["win"] / (sum(outcomes_stand.values()) or 1)
 
-    return "hit" if prob_hit > prob_stand else "stand"
-
-def play_blackjack_with_recommendations():
-    # Generate and shuffle decks
+    return "hit" if prob_hit*.7 > prob_stand else "stand"
+def create_deck():
+#   Generate and shuffle decks
     all_decks = []
     num_decks = 1
     for _ in range(num_decks):
         all_decks.extend(generate_deck())
     shuffled_deck = shuffle_all_decks(all_decks)
     deck = convert_to_tuples(shuffled_deck)
-
+    return deck
+def play_blackjack_with_recommendations(deck):
     # Deal initial hands
     player_hand = [deck.pop()]
     dealer_hand = [deck.pop()]
@@ -97,7 +97,7 @@ def play_blackjack_with_recommendations():
     while calculate_hand_value(player_hand) < 21:
         recommendation = recommend_action(player_hand, dealer_hand, deck)
         print(f"Recommendation:{recommendation} ")
-        move = input(f"Do you want to hit or stand? (Recommended: {recommendation}) ").lower()
+        move = recommendation #input(f"Do you want to hit or stand? (Recommended: {recommendation}) ").lower()
         if move == 'hit':
             player_hand.append(deck.pop())
             print("Your hand:", calculate_hand_value(player_hand))
@@ -139,9 +139,14 @@ def play_blackjack_with_recommendations():
 if __name__ == "__main__":
     results = {"win": 0, "lose": 0, "tie": 0}
 
-    result = play_blackjack_with_recommendations()
-    results[result] += 1
+    # deck = create_deck()
+    for x in range(5000):
+        # if len(deck) < 10:
+        #     deck = create_deck()
+        deck = create_deck()
+        result = play_blackjack_with_recommendations(deck)
+        results[result] += 1
 
-    print(f"Wins: {results['win']} ({(results['win'] / 1000) * 100:.2f}%)")
-    print(f"Losses: {results['lose']} ({(results['lose'] / 1000) * 100:.2f}%)")
-    print(f"Ties: {results['tie']} ({(results['tie'] / 1000) * 100:.2f}%)")
+    print(f"Wins: {results['win']} ({(results['win'] / 5000) * 100:.2f}%)")
+    print(f"Losses: {results['lose']} ({(results['lose'] / 5000) * 100:.2f}%)")
+    print(f"Ties: {results['tie']} ({(results['tie'] / 5000) * 100:.2f}%)")
