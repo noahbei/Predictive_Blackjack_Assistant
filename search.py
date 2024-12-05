@@ -1,67 +1,69 @@
-import blackjack
+from blackjack import generate_deck, shuffle_all_decks, calculate_hand_value, display_hand, convert_to_tuples
 
-def simulate_outcome(deck, hand, dealer_hand, depth=3):
+def simulate_outcome(deck, hand, dealer_hand, depth=3, is_player_turn=True):
     """
-    Simulates outcomes for a given state using BFS.
+    Simulates outcomes for a given state using a search algorithm (Minimax-like approach).
     - deck: Remaining cards in the deck
     - hand: Player's current hand
     - dealer_hand: Dealer's current hand
     - depth: Number of levels to explore in the decision tree
+    - is_player_turn: Whether it's the player's turn
+    Returns a dictionary of outcomes (win, lose, tie, bust).
     """
-    from collections import deque
-    import itertools
+    if depth == 0 or calculate_hand_value(hand) > 21:
+        # Terminal state or maximum depth reached
+        player_value = calculate_hand_value(hand)
+        dealer_value = calculate_hand_value(dealer_hand)
 
-    # Nodes will store (player_hand, dealer_hand, deck, player_turn, score)
-    queue = deque([(hand, dealer_hand, deck[:], True, 0)])  # True if player's turn
+        if player_value > 21:
+            return {"win": 0, "lose": 1, "tie": 0, "bust": 1}
+        if dealer_value > 21:
+            return {"win": 1, "lose": 0, "tie": 0, "bust": 0}
+        if player_value > dealer_value:
+            return {"win": 1, "lose": 0, "tie": 0, "bust": 0}
+        if player_value < dealer_value:
+            return {"win": 0, "lose": 1, "tie": 0, "bust": 0}
+        return {"win": 0, "lose": 0, "tie": 1, "bust": 0}
+
     outcomes = {"win": 0, "lose": 0, "tie": 0, "bust": 0}
 
-    # BFS on decision tree
-    for _ in range(depth):
-        for _ in range(len(queue)):
-            curr_hand, curr_dealer_hand, curr_deck, player_turn, _ = queue.popleft()
-            curr_value = blackjack.calculate_hand_value(curr_hand)
+    if is_player_turn:
+        # Player's turn: Hit or Stand
+        for i, card in enumerate(deck):
+            new_hand = hand + [card]
+            new_deck = deck[:i] + deck[i + 1:]
+            result = simulate_outcome(new_deck, new_hand, dealer_hand, depth - 1, False)
+            for key in outcomes:
+                outcomes[key] += result[key]
 
-            # Check for terminal state
-            if curr_value > 21:  # Player busts
-                outcomes["bust"] += 1
-                continue
+        # "Stand" branch
+        result = simulate_outcome(deck, hand, dealer_hand, depth - 1, False)
+        for key in outcomes:
+            outcomes[key] += result[key]
 
-            if not player_turn:  # Dealer's turn
-                dealer_value = blackjack.calculate_hand_value(curr_dealer_hand)
-                if dealer_value >= 17:
-                    # Compare hands
-                    if dealer_value > 21 or curr_value > dealer_value:
-                        outcomes["win"] += 1
-                    elif curr_value < dealer_value:
-                        outcomes["lose"] += 1
-                    else:
-                        outcomes["tie"] += 1
-                    continue
-
-                # Dealer draws a card
-                for i, card in enumerate(curr_deck):
-                    new_deck = curr_deck[:i] + curr_deck[i + 1:]
-                    new_dealer_hand = curr_dealer_hand + [card]
-                    queue.append((curr_hand, new_dealer_hand, new_deck, False, 0))
-            else:
-                # Player's turn: Hit or Stand
-                # "Stand" branch
-                queue.append((curr_hand, curr_dealer_hand, curr_deck, False, 0))
-
-                # "Hit" branch
-                for i, card in enumerate(curr_deck):
-                    new_deck = curr_deck[:i] + curr_deck[i + 1:]
-                    new_hand = curr_hand + [card]
-                    queue.append((new_hand, curr_dealer_hand, new_deck, True, 0))
+    else:
+        # Dealer's turn: Hit until 17 or higher
+        dealer_value = calculate_hand_value(dealer_hand)
+        if dealer_value >= 17:
+            result = simulate_outcome(deck, hand, dealer_hand, depth - 1, True)
+            for key in outcomes:
+                outcomes[key] += result[key]
+        else:
+            for i, card in enumerate(deck):
+                new_dealer_hand = dealer_hand + [card]
+                new_deck = deck[:i] + deck[i + 1:]
+                result = simulate_outcome(new_deck, hand, new_dealer_hand, depth - 1, True)
+                for key in outcomes:
+                    outcomes[key] += result[key]
 
     return outcomes
 
-def recommend_action(player_hand, dealer_hand, deck):
+def recommend_action(player_hand, dealer_hand, deck, depth=3):
     """
     Recommends whether the player should hit or stand based on simulated outcomes.
     """
-    outcomes_hit = simulate_outcome(deck, player_hand + [deck[0]], dealer_hand)
-    outcomes_stand = simulate_outcome(deck, player_hand, dealer_hand)
+    outcomes_hit = simulate_outcome(deck, player_hand + [deck[0]], dealer_hand, depth)
+    outcomes_stand = simulate_outcome(deck, player_hand, dealer_hand, depth)
 
     # Calculate win probabilities
     prob_hit = outcomes_hit["win"] / (sum(outcomes_hit.values()) or 1)
@@ -69,49 +71,56 @@ def recommend_action(player_hand, dealer_hand, deck):
 
     return "hit" if prob_hit > prob_stand else "stand"
 
-# Integrate into the game loop
 def play_blackjack_with_recommendations():
-    deck = blackjack.create_deck(3)
+    # Generate and shuffle decks
+    all_decks = []
+    num_decks = 1
+    for _ in range(num_decks):
+        all_decks.extend(generate_deck())
+    shuffled_deck = shuffle_all_decks(all_decks)
+    deck = convert_to_tuples(shuffled_deck)
 
+    # Deal initial hands
     player_hand = [deck.pop()]
     dealer_hand = [deck.pop()]
     player_hand.append(deck.pop())
     dealer_hand.append(deck.pop())
 
     print("Dealer's hand:")
-    blackjack.display_hand(dealer_hand, hide_first_card=True)
+    display_hand(dealer_hand, hide_first_card=True)
 
-    print("Your hand:", blackjack.get_hand_total(player_hand))
-    blackjack.display_hand(player_hand)
+    print("Your hand:", calculate_hand_value(player_hand))
+    display_hand(player_hand)
 
-    while blackjack.calculate_hand_value(player_hand) < 21:
+    # Player's turn
+    while calculate_hand_value(player_hand) < 21:
         recommendation = recommend_action(player_hand, dealer_hand, deck)
         print(f"Recommendation: {recommendation}")
 
-        move = input("Do you want to 'hit' or 'stand'? (Recommended: {}) ".format(recommendation)).lower()
+        move = input(f"Do you want to 'hit' or 'stand'? (Recommended: {recommendation}) ").lower()
         if move == 'hit':
             player_hand.append(deck.pop())
-            print("Your hand:", blackjack.get_hand_total(player_hand))
-            blackjack.display_hand(player_hand)
+            print("Your hand:", calculate_hand_value(player_hand))
+            display_hand(player_hand)
         elif move == 'stand':
             break
         else:
             print("Invalid input. Please enter 'hit' or 'stand'.")
 
-    player_value = blackjack.calculate_hand_value(player_hand)
+    # Final evaluation
+    player_value = calculate_hand_value(player_hand)
     if player_value > 21:
         print("You busted! Dealer wins.")
         return
 
     print("Dealer's hand:")
-    blackjack.display_hand(dealer_hand)
-
-    while blackjack.calculate_hand_value(dealer_hand) < 17:
+    display_hand(dealer_hand)
+    while calculate_hand_value(dealer_hand) < 17:
         dealer_hand.append(deck.pop())
         print("Dealer's hand:")
-        blackjack.display_hand(dealer_hand)
+        display_hand(dealer_hand)
 
-    dealer_value = blackjack.calculate_hand_value(dealer_hand)
+    dealer_value = calculate_hand_value(dealer_hand)
 
     if dealer_value > 21 or player_value > dealer_value:
         print("You win!")
