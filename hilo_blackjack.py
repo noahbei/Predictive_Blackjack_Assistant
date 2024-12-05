@@ -26,12 +26,28 @@ def true_count(running_count, remaining_decks):
 # Recommends an action based on the true count.
 def recommend_hilo_action(player_hand, dealer_hand, running_count, remaining_decks):
     true_count_value = true_count(running_count, remaining_decks)
+    player_value = calculate_hand_value(player_hand)
+    dealer_up_card = dealer_hand[0][0]  # Dealer's visible card
 
-    # Basic strategy combined with Hi-Lo count:
-    if true_count_value >= 1:
-        return "hit" if calculate_hand_value(player_hand) <= 16 else "stand"
+    # Adjust thresholds for hitting and standing based on true count
+    if true_count_value >= 2:
+        # Favor standing more if true count is highly positive
+        if player_value >= 12:
+            return "stand"
+        else:
+            return "hit"
+    elif true_count_value >= 1:
+        # Slightly favorable count: Be more aggressive
+        if player_value <= 15:
+            return "hit"
+        else:
+            return "stand"
     else:
-        return "stand" if calculate_hand_value(player_hand) >= 12 else "hit"
+        # Negative or neutral count: Be more conservative
+        if player_value >= 13 or (player_value >= 12 and dealer_up_card in ['2', '3', '4', '5', '6']):
+            return "stand"
+        else:
+            return "hit"
 
 # Generate and shuffle decks
 def play_blackjack_hilo(num_decks=1):
