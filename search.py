@@ -23,7 +23,7 @@ def simulate_outcome(deck, hand, dealer_hand, depth=3):
             dealer_value = calculate_hand_value(curr_dealer_hand)
 
             if player_value > 21:
-                outcomes["bust"] += 1
+                outcomes["lose"] += 1
             elif dealer_value > 21:
                 outcomes["win"] += 1
             elif player_value > dealer_value:
@@ -63,12 +63,11 @@ def recommend_action(player_hand, dealer_hand, deck, depth=3):
     """
     Recommends whether the player should hit or stand based on simulated outcomes.
     """
-    outcomes_hit = simulate_outcome(deck, player_hand + [deck[-1]], dealer_hand, depth)
-    outcomes_stand = simulate_outcome(deck, player_hand, dealer_hand, depth)
+    outcomes_hit = simulate_outcome(deck, player_hand, dealer_hand, depth)
 
     # Calculate win probabilities
     prob_hit = outcomes_hit["win"] / (sum(outcomes_hit.values()) or 1)
-    prob_stand = outcomes_stand["win"] / (sum(outcomes_stand.values()) or 1)
+    prob_stand = outcomes_hit["lose"] / (sum(outcomes_hit.values()) or 1)
 
     return "hit" if prob_hit > prob_stand else "stand"
 
