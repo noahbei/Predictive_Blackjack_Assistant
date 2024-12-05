@@ -1,4 +1,5 @@
 import blackjack
+import random
 
 def simulate_outcome(deck, hand, dealer_hand, depth=3):
     """
@@ -71,7 +72,7 @@ def recommend_action(player_hand, dealer_hand, deck):
 
 # Integrate into the game loop
 def play_blackjack_with_recommendations():
-    deck = blackjack.create_deck(3)
+    deck = blackjack.create_deck(1)
 
     player_hand = [deck.pop()]
     dealer_hand = [deck.pop()]
@@ -85,10 +86,10 @@ def play_blackjack_with_recommendations():
     blackjack.display_hand(player_hand)
 
     while blackjack.calculate_hand_value(player_hand) < 21:
-        recommendation = recommend_action(player_hand, dealer_hand, deck)
-        print(f"Recommendation: {recommendation}")
+        # recommendation = recommend_action(player_hand, dealer_hand, deck)
+        # print(f"Recommendation: {recommendation}")
 
-        move = input("Do you want to 'hit' or 'stand'? (Recommended: {}) ".format(recommendation)).lower()
+        move =  random.choice(["hit", "stand"])
         if move == 'hit':
             player_hand.append(deck.pop())
             print("Your hand:", blackjack.get_hand_total(player_hand))
@@ -115,10 +116,23 @@ def play_blackjack_with_recommendations():
 
     if dealer_value > 21 or player_value > dealer_value:
         print("You win!")
+        return 0
     elif player_value < dealer_value:
         print("Dealer wins.")
+        return 1
     else:
         print("It's a tie!")
+        return 2
 
 if __name__ == "__main__":
-    play_blackjack_with_recommendations()
+    win = 0
+    tie = 0
+    lost = 0
+    for x in range(5000):
+        if play_blackjack_with_recommendations() == 0:
+            win += 1
+        elif play_blackjack_with_recommendations() == 1:
+            lost += 1
+        else:
+            tie += 1
+    print(win, tie, lost)
