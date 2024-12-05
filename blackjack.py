@@ -33,6 +33,22 @@ def calculate_hand_value(hand):
         ace_count -= 1
     return value
 
+def get_hand_total(hand):
+    total = 0
+    ace_count = 0
+    for card in hand:
+        rank = card[0]
+        total += values[rank]
+        if rank == 'A':
+            ace_count += 1
+    
+    # Adjust for Aces if total value is greater than 21
+    while total > 21 and ace_count > 0:
+        total -= 10
+        ace_count -= 1
+    
+    return total
+
 # Function to display a hand
 def display_hand(hand, hide_first_card=False):
     if hide_first_card:
@@ -46,21 +62,23 @@ def display_hand(hand, hide_first_card=False):
 def play_blackjack():
     deck = create_deck()
 
-    player_hand = [deck.pop(), deck.pop()]
-    dealer_hand = [deck.pop(), deck.pop()]
+    player_hand = [deck.pop()]
+    dealer_hand = [deck.pop()]
+    player_hand.append(deck.pop())
+    dealer_hand.append(deck.pop())
 
     print("Dealer's hand:")
     display_hand(dealer_hand, hide_first_card=True)
 
-    print("Your hand:")
+    print("Your hand:", get_hand_total(player_hand))
     display_hand(player_hand)
 
     while calculate_hand_value(player_hand) < 21:
         move = input("Do you want to 'hit' or 'stand'? ").lower()
         if move == 'hit':
             player_hand.append(deck.pop())
-            print("Your hand:")
-            display_hand(player_hand)
+            print("Your hand:", get_hand_total(player_hand))
+            display_hand(player_hand) 
         elif move == 'stand':
             break
         else:
