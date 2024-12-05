@@ -56,7 +56,6 @@ def simulate_outcome(deck, hand, dealer_hand, depth=3):
 
     return outcomes
 
-
 def recommend_action(player_hand, dealer_hand, deck):
     """
     Recommends whether the player should hit or stand based on simulated outcomes.
