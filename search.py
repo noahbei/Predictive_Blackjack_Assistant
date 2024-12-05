@@ -69,7 +69,6 @@ def recommend_action(player_hand, dealer_hand, deck):
 
     return "hit" if prob_hit > prob_stand else "stand"
 
-
 # Integrate into the game loop
 def play_blackjack_with_recommendations():
     deck = blackjack.create_deck(3)
