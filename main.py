@@ -128,3 +128,5 @@ def play_blackjack_with_recommendations():
 
 if __name__ == "__main__":
     result = play_blackjack_with_recommendations()
+    print(result)
+
