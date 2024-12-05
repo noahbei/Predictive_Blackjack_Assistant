@@ -58,18 +58,51 @@ def simulate_outcome(deck, hand, dealer_hand, depth=3):
                     queue.append((curr_hand, new_dealer_hand, new_deck, False, curr_depth + 1))
 
     return outcomes
+def resolve_stand(player_hand, dealer_hand, deck):
+    """
+    Resolves the game when the player stands.
+    Simulates the dealer's turn and determines the final outcome.
+    """
+    dealer_value = calculate_hand_value(dealer_hand)
+
+    # Dealer's turn: hit until at least 17
+    while dealer_value < 17 or (dealer_value == 17 and 'A' in [card[0] for card in dealer_hand]):
+        dealer_hand.append(deck.pop())
+        dealer_value = calculate_hand_value(dealer_hand)
+
+    # Evaluate outcomes
+    player_value = calculate_hand_value(player_hand)
+    if player_value > 21:
+        return {"win": 0, "lose": 1, "tie": 0, "bust": 1}  # Player busts
+    if dealer_value > 21:
+        return {"win": 1, "lose": 0, "tie": 0, "bust": 0}  # Dealer busts
+    if player_value > dealer_value:
+        return {"win": 1, "lose": 0, "tie": 0, "bust": 0}
+    if player_value < dealer_value:
+        return {"win": 0, "lose": 1, "tie": 0, "bust": 0}
+    return {"win": 0, "lose": 0, "tie": 1, "bust": 0}  # Tie
 
 def recommend_action(player_hand, dealer_hand, deck, depth=3):
     """
     Recommends whether the player should hit or stand based on simulated outcomes.
     """
-    outcomes_hit = simulate_outcome(deck, player_hand + [deck[-1]], dealer_hand, depth)
-    outcomes_stand = simulate_outcome(deck, player_hand, dealer_hand, depth)
+    # Simulate "hit" by exploring all possible cards in the deck
+    outcomes_hit = {"win": 0, "lose": 0, "tie": 0, "bust": 0}
+    for i, card in enumerate(deck):
+        new_hand = player_hand + [card]
+        new_deck = deck[:i] + deck[i+1:]
+        hit_outcomes = simulate_outcome(new_deck, new_hand, dealer_hand, depth)
+        for outcome in outcomes_hit:
+            outcomes_hit[outcome] += hit_outcomes[outcome] / len(deck)
 
-    # Calculate win probabilities
+    # Simulate "stand" by resolving the dealer's turn
+    outcomes_stand = resolve_stand(player_hand, dealer_hand, deck)
+
+    # Calculate scores for hit and stand
     prob_hit = outcomes_hit["win"] / (sum(outcomes_hit.values()) or 1)
     prob_stand = outcomes_stand["win"] / (sum(outcomes_stand.values()) or 1)
 
+    # Recommend the action with the higher win probability
     return "hit" if prob_hit > prob_stand else "stand"
 
 def play_blackjack_with_recommendations():
