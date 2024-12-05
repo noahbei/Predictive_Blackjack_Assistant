@@ -1,5 +1,4 @@
 numDecks = 3
-numPlayers = 1
 
 import random
 
@@ -12,11 +11,12 @@ values = {
 }
 
 # Function to create a deck
-def create_deck():
+def create_deck(numDecks):
     deck = []
-    for suit in suits:
-        for rank in ranks:
-            deck.append((rank, suit))
+    for x in range(numDecks):
+        for suit in suits:
+            for rank in ranks:
+                deck.append((rank, suit))
     random.shuffle(deck)
     return deck
 
@@ -60,7 +60,7 @@ def display_hand(hand, hide_first_card=False):
 
 # Function to play the game
 def play_blackjack():
-    deck = create_deck()
+    deck = create_deck(numDecks)
 
     player_hand = [deck.pop()]
     dealer_hand = [deck.pop()]
