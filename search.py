@@ -3,14 +3,6 @@ from collections import deque
 import random
 
 def simulate_outcome(deck, hand, dealer_hand, depth=3):
-    """
-    Simulates outcomes for a given state using BFS.
-    - deck: Remaining cards in the deck
-    - hand: Player's current hand
-    - dealer_hand: Dealer's current hand
-    - depth: Number of levels to explore in the decision tree
-    Returns a dictionary of outcomes (win, lose, tie, bust).
-    """
     outcomes = {"win": {"stand": 0, "hit": 0, "None": 0}, "lose": {"stand": 0, "hit": 0, "None": 0},
                 "tie": {"stand": 0, "hit": 0, "None": 0}, "bust": {"stand": 0, "hit": 0, "None": 0}}
     queue = deque([(hand, dealer_hand, deck, True, 0, "None")])  # (player_hand, dealer_hand, deck, is_player_turn, current_depth, hit_or_stand)
@@ -61,9 +53,6 @@ def simulate_outcome(deck, hand, dealer_hand, depth=3):
     return outcomes
 
 def recommend_action(player_hand, dealer_hand, deck, depth=3):
-    """
-    Recommends whether the player should hit or stand based on simulated outcomes.
-    """
     outcomes_hit = simulate_outcome(deck, player_hand, dealer_hand, depth)
 
     # Calculate win probabilities
@@ -97,8 +86,8 @@ def play_blackjack_with_recommendations():
     while calculate_hand_value(player_hand) < 21:
         recommendation = recommend_action(player_hand, dealer_hand, deck)
         print(f"Recommendation:{recommendation} ")
-        move = recommendation
-        #input(f"Do you want to hit or stand? (Recommended: {recommendation}) ").lower()
+        #move = recommendation
+        move = input(f"Do you want to hit or stand? (Recommended: {recommendation}) ").lower()
         if move == 'hit':
             player_hand.append(deck.pop())
             print("Your hand:", calculate_hand_value(player_hand))
