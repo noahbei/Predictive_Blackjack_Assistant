@@ -138,12 +138,4 @@ def play_blackjack_with_recommendations():
         return "tie"  # Equal values result in a tie
 
 if __name__ == "__main__":
-    results = {"win": 0, "lose": 0, "tie": 0}
-
-    for x in range(100):
-        result = play_blackjack_with_recommendations()
-        results[result] += 1
-
-    print(f"Wins: {results['win']} ({(results['win'] / 100) * 100:.2f}%)")
-    print(f"Losses: {results['lose']} ({(results['lose'] / 100) * 100:.2f}%)")
-    print(f"Ties: {results['tie']} ({(results['tie'] / 100) * 100:.2f}%)")
+    result = play_blackjack_with_recommendations()
