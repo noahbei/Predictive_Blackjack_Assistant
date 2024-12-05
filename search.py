@@ -85,7 +85,7 @@ def play_blackjack_with_recommendations():
     # Player's turn
     while calculate_hand_value(player_hand) < 21:
         recommendation = recommend_action(player_hand, dealer_hand, deck)
-        print(f"Recommendation:{recommendation} ")
+        print(f"Recommendation: {recommendation} ")
         #move = recommendation
         move = input(f"Do you want to hit or stand? (Recommended: {recommendation}) ").lower()
         if move == 'hit':
