@@ -22,3 +22,26 @@ git clone https://github.com/noahbei/Predictive_Blackjack_Assistant
 cd Predictive_Blackjack_Assistant
 pip install -r requirements.txt
 ```
+## Usage
+To run the search-based predictive blackjack assistant:
+```bash
+python3 main.py
+```
+This will start a blackjack game where the assistant automatically makes recommendations based on the simulated outcomes. You can interact with the game in non-automated mode by responding to the recommendations.
+
+To run the Hi-Lo predictive blackjack assistant:
+```bash
+python3 hilo_blackjack.py
+```
+This version uses the Hi-Lo card counting method to adjust the recommendations based on the running count.
+
+Testing the Assistant
+To run automated simulations and test the assistant's performance:
+```bash
+$ python3 -m unittest "tests/test_hilo_blackjack.py" 
+```
+```bash
+$ python3 -m unittest "tests/test_search_blackjack.py" 
+```
+This will run 10,000 simulations, recording the outcomes (win, loss, tie) and providing statistics on the assistant's performance.
+
