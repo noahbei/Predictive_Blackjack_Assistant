@@ -1,3 +1,5 @@
+# Predictive Blackjack Assistant with game state searching
+
 from blackjack import generate_deck, shuffle_all_decks, calculate_hand_value, display_hand, convert_to_tuples
 from collections import deque
 import random
@@ -53,10 +55,8 @@ def simulate_outcome(deck, hand, dealer_hand, depth=3):
 
     return outcomes
 
+# Recommends whether the player should hit or stand based on simulated outcomes.
 def recommend_action(player_hand, dealer_hand, deck, depth=3):
-    """
-    Recommends whether the player should hit or stand based on simulated outcomes.
-    """
     outcomes_hit = simulate_outcome(deck, player_hand, dealer_hand, depth)
 
     # Calculate win probabilities

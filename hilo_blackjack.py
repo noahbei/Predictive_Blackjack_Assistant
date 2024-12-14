@@ -1,3 +1,5 @@
+# Predictive Blackjack Assistant with card counting
+
 from shuffling_deck import Card, generate_deck, shuffle_all_decks
 from blackjack import convert_to_tuples, calculate_hand_value, display_hand
 from collections import deque
