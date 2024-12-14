@@ -5,7 +5,7 @@ from hilo_blackjack import play_blackjack_hilo
 class TestHiloBlackjackSimulation(unittest.TestCase):
     def test_simulation_outcomes(self):
         results = {"win": 0, "lose": 0, "tie": 0}
-        num_simulations = 1000
+        num_simulations = 10000
 
         for _ in range(num_simulations):
             result = play_blackjack_hilo(automated=True)
