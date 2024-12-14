@@ -20,7 +20,6 @@ To install and use this project, clone the repository and install the required d
 ```bash
 git clone https://github.com/noahbei/Predictive_Blackjack_Assistant
 cd Predictive_Blackjack_Assistant
-pip install -r requirements.txt
 ```
 ## Usage
 To run the search-based predictive blackjack assistant:
