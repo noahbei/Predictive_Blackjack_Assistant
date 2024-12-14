@@ -70,4 +70,5 @@ This is an overview of the files in the project and their respective purposes:
 t__.py`**: Marks the `tests` directory as a Python package and may include setup code for tests.
 
 ## Diagram of BFS
-[Screenshot 2024-12-13 202217](https://github.com/user-attachments/assets/95272fe7-f43d-4b86-a907-fa3e10579816)
+<img width="518" alt="image" src="https://github.com/user-attachments/assets/a45fdbab-0507-4404-ae98-62117f5fae75" />
+
