@@ -52,7 +52,7 @@ def recommend_hilo_action(player_hand, dealer_hand, running_count, remaining_dec
             return "hit"
 
 # Generate and shuffle decks
-def play_blackjack_hilo(num_decks=1):
+def play_blackjack_hilo(num_decks=1, automated = False):
     all_decks = []
     for _ in range(num_decks):
         all_decks.extend(generate_deck())
@@ -78,8 +78,13 @@ def play_blackjack_hilo(num_decks=1):
     while calculate_hand_value(player_hand) < 21:
         remaining_decks = len(deck) // 52
         recommendation = recommend_hilo_action(player_hand, dealer_hand, running_count, remaining_decks)
-        print(f"Recommendation based on Hi-Lo: {recommendation}")
-        move = input(f"Do you want to hit or stand? (Recommended: {recommendation}) ").lower()
+
+        if not automated:
+            print(f"Recommendation based on Hi-Lo: {recommendation}")
+            move = input(f"Do you want to hit or stand? (Recommended: {recommendation}) ").lower()
+        else:
+            move = recommendation
+
         if move == 'hit':
             new_card = deck.pop()
             player_hand.append(new_card)

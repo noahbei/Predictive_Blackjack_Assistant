@@ -8,7 +8,7 @@ class TestBlackjackSimulation(unittest.TestCase):
         num_simulations = 1000 
 
         for _ in range(num_simulations):
-            result = play_blackjack_with_recommendations()
+            result = play_blackjack_with_recommendations(automated = True)
             self.assertIn(result, ["win", "lose", "tie"], "Unexpected simulation result.")
             results[result] += 1
 

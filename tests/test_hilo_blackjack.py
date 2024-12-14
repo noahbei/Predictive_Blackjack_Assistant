@@ -8,7 +8,7 @@ class TestHiloBlackjackSimulation(unittest.TestCase):
         num_simulations = 1000
 
         for _ in range(num_simulations):
-            result = play_blackjack_hilo()
+            result = play_blackjack_hilo(automated=True)
             self.assertIn(result, ["win", "lose", "tie"], "Unexpected simulation result.")
             results[result] += 1
 

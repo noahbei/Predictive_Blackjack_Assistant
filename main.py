@@ -65,7 +65,7 @@ def recommend_action(player_hand, dealer_hand, deck, depth=3):
 
     return "hit" if prob_hit > prob_stand else "stand"
 
-def play_blackjack_with_recommendations():
+def play_blackjack_with_recommendations(automated = False):
     # Generate and shuffle decks
     all_decks = []
     num_decks = 1
@@ -89,8 +89,13 @@ def play_blackjack_with_recommendations():
     # Player's turn
     while calculate_hand_value(player_hand) < 21:
         recommendation = recommend_action(player_hand, dealer_hand, deck)
-        print(f"Recommendation: {recommendation} ")
-        move = input(f"Do you want to hit or stand? (Recommended: {recommendation}) ").lower()
+
+        if not automated:
+            print(f"Recommendation: {recommendation} ")
+            move = input(f"Do you want to hit or stand? (Recommended: {recommendation}) ").lower()
+        else:
+            move = recommendation
+
         if move == 'hit':
             player_hand.append(deck.pop())
             print("Your hand:", calculate_hand_value(player_hand))
