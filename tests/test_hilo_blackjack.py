@@ -1,4 +1,5 @@
 import unittest
+from collections import Counter
 from hilo_blackjack import play_blackjack_hilo
 
 class TestHiloBlackjackSimulation(unittest.TestCase):
