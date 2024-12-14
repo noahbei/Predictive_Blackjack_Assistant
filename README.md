@@ -45,3 +45,23 @@ $ python3 -m unittest "tests/test_search_blackjack.py"
 ```
 This will run 10,000 simulations, recording the outcomes (win, loss, tie) and providing statistics on the assistant's performance.
 
+## Project File Structure
+This is an overview of the files in the project and their respective purposes:
+
+- **`.gitignore`**: Specifies which files and directories Git should ignore in version control.
+
+- **`blackjack.py`**: Contains the core logic for a Blackjack game. It defines the rules, player actions, and game flow for a standard game of Blackjack.
+
+- **`hilo_blackjack.py`**: Implements a variant of Blackjack, Hi-Lo Blackjack, where players are given recommendations to 'hit' or 'stand' whether the next card is higher or lower than the previous one.
+
+- **`main.py`**: Implements a variant of Blackjack that uses searching where players are given recommendations to 'hit' or 'stand' based on the probability that a 'hit' or 'stand' will win.
+
+- **`shuffling_deck.py`**: Contains code for shuffling the deck of cards, a critical function for card-based games like Blackjack.
+
+- **`tests/`**: A directory containing unit tests for the project
+
+  - **`tests/test_hilo_blackjack.py`**: Contains tests for the functionality of the Hi-Lo Blackjack game, ensuring that its rules and mechanics work correctly.
+  
+  - **`tests/test_search_blackjack.py`**: Contains tests for a "search" functionality within the Blackjack game (possibly related to card or player search), ensuring that the search feature works correctly.
+
+  - **`tests/__init__.py`**: Marks the `tests` directory as a Python package and may include setup code for tests.
