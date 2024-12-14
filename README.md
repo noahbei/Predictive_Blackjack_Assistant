@@ -66,4 +66,8 @@ This is an overview of the files in the project and their respective purposes:
   
   - **`tests/test_search_blackjack.py`**: Contains tests for a "search" functionality within the Blackjack game (possibly related to card or player search), ensuring that the search feature works correctly.
 
-  - **`tests/__init__.py`**: Marks the `tests` directory as a Python package and may include setup code for tests.
+  - **`tests/__ini!
+t__.py`**: Marks the `tests` directory as a Python package and may include setup code for tests.
+
+## Diagram of BFS
+[Screenshot 2024-12-13 202217](https://github.com/user-attachments/assets/95272fe7-f43d-4b86-a907-fa3e10579816)
