@@ -45,6 +45,9 @@ $ python3 -m unittest "tests/test_search_blackjack.py"
 ```
 This will run 10,000 simulations, recording the outcomes (win, loss, tie) and providing statistics on the assistant's performance.
 
+## How to play
+After running either **`main.py`** or **`hilo_blackjack.py`**, players will be shown what cards have been dealt to them and the dealer. They will then be given a recommendation to either 'hit' or 'stand'. The user then gets to pick from these options by typing in the terminal. Continue this loop until the game ends to see who wins.
+
 ## Project File Structure
 This is an overview of the files in the project and their respective purposes:
 
